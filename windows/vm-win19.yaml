@@ -1,0 +1,78 @@
+apiVersion: kubevirt.io/v1alpha3
+kind: VirtualMachine
+metadata:
+  annotations:
+    kubevirt.io/latest-observed-api-version: v1alpha3
+    kubevirt.io/storage-observed-api-version: v1alpha3
+    name.os.template.kubevirt.io/win2k19: Microsoft Windows Server 2019
+  labels:
+    app: win19
+    app.kubernetes.io/part-of: Backend
+    flavor.template.kubevirt.io/Custom: "true"
+    workload.template.kubevirt.io/server: "true"
+  name: win19
+  namespace: windows
+spec:
+  running: true
+  template:
+    metadata:
+      labels:
+        flavor.template.kubevirt.io/Custom: "true"
+        kubevirt.io/domain: win19
+        kubevirt.io/size: large
+        vm.kubevirt.io/name: win19
+    spec:
+      domain:
+        clock:
+          timer:
+            hpet:
+              present: false
+            hyperv: {}
+            pit:
+              tickPolicy: delay
+            rtc:
+              tickPolicy: catchup
+          utc: {}
+        cpu:
+          cores: 4
+          sockets: 1
+          threads: 1
+        devices:
+          disks:
+          - cdrom:
+              bus: sata
+            name: windows-guest-tools
+          - bootOrder: 1
+            disk:
+              bus: virtio
+            name: disk0
+          interfaces:
+          - bridge: {}
+            model: e1000
+            name: nic0
+        features:
+          acpi: {}
+          apic: {}
+          hyperv:
+            relaxed: {}
+            spinlocks:
+              spinlocks: 8191
+            vapic: {}
+        machine:
+          type: pc-q35-rhel8.1.0
+        resources:
+          requests:
+            memory: 12Gi
+      evictionStrategy: LiveMigrate
+      hostname: win19
+      networks:
+      - name: nic0
+        pod: {}
+      terminationGracePeriodSeconds: 0
+      volumes:
+      - containerDisk:
+          image: registry.redhat.io/container-native-virtualization/virtio-win
+        name: windows-guest-tools
+      - name: disk0
+        persistentVolumeClaim:
+          claimName: hdd

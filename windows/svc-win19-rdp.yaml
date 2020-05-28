@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: win19-rdp
+  namespace: windows
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+  - nodePort: 31466
+    port: 3389
+    name: rdp
+    protocol: TCP
+    targetPort: 3389
+  selector:
+    flavor.template.kubevirt.io/Custom: "true"
+    kubevirt.io/domain: win19
+    vm.kubevirt.io/name: win19
+  sessionAffinity: None
+  type: NodePort

@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sql-win
+  namespace: windows
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+  - nodePort: 32555
+    port: 1433
+    protocol: TCP
+    targetPort: 1433
+  selector:
+    flavor.template.kubevirt.io/Custom: "true"
+    kubevirt.io/domain: win19
+    vm.kubevirt.io/name: win19
+  sessionAffinity: None
+  type: NodePort
